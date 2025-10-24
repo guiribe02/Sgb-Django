@@ -1,0 +1,186 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Desabilitar Autenticação em Duas Etapas - SGBooks{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-body p-5">
+                    <div class="text-center mb-4">
+                        <h2 class="card-title">
+                            <i class="fas fa-shield-alt text-danger"></i> 
+                            Desabilitar 2FA
+                        </h2>
+                        <p class="text-muted">Remover autenticação em duas etapas da sua conta</p>
+                    </div>
+
+                    <!-- Alerta de Aviso -->
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <strong>⚠️ Aviso:</strong> 
+                        Desabilitar o 2FA reduzirá a segurança da sua conta. 
+                        Você não precisará mais de um código de autenticação para fazer login.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+
+                    <!-- Mensagens de Erro/Sucesso -->
+                    {% if messages %}
+                        {% for message in messages %}
+                            {% if message.tags %}
+                                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+
+                    <!-- Informações -->
+                    <div class="card bg-light mb-4">
+                        <div class="card-body">
+                            <h6 class="card-title mb-3">
+                                <i class="fas fa-info-circle"></i> 
+                                <strong>O que vai acontecer:</strong>
+                            </h6>
+                            <ul class="small mb-0">
+                                <li>Seu código de autenticador será desvinculado</li>
+                                <li>Todos os seus códigos de backup serão removidos</li>
+                                <li>Da próxima vez que fizer login, precisará apenas de sua senha</li>
+                                <li>Você poderá reabilitar o 2FA a qualquer momento</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Formulário de Confirmação -->
+                    <form method="POST" onsubmit="return confirm('Tem certeza que deseja desabilitar o 2FA? Esta ação reduzirá a segurança da sua conta.');">
+                        {% csrf_token %}
+
+                        <div class="mb-4">
+                            <label for="password" class="form-label">
+                                <strong>Confirme sua senha:</strong>
+                            </label>
+                            <p class="text-muted small mb-2">
+                                Por segurança, pedimos que confirme sua senha para desabilitar o 2FA.
+                            </p>
+                            <input 
+                                type="password" 
+                                class="form-control form-control-lg" 
+                                id="password" 
+                                name="password" 
+                                placeholder="Digite sua senha" 
+                                required 
+                                autofocus
+                            >
+                        </div>
+
+                        <button type="submit" class="btn btn-danger w-100 btn-lg mb-3">
+                            <i class="fas fa-times-circle"></i> Desabilitar 2FA
+                        </button>
+                    </form>
+
+                    <!-- Alternativa -->
+                    <div class="card bg-light border-info">
+                        <div class="card-body">
+                            <h6 class="card-title text-info mb-2">
+                                <i class="fas fa-lightbulb"></i> 
+                                Pensou melhor?
+                            </h6>
+                            <p class="card-text small mb-0">
+                                Se preferir manter o 2FA habilitado, você pode 
+                                <a href="{% url 'backup_codes_2fa' %}">gerar novos códigos de backup</a> 
+                                em caso de emergência.
+                            </p>
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <div class="text-center">
+                        <a href="{% url 'login' %}" class="text-muted small">
+                            <i class="fas fa-arrow-left"></i> Cancelar e voltar
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FAQ -->
+            <div class="card mt-4 border-secondary">
+                <div class="card-body">
+                    <h6 class="card-title text-secondary mb-3">
+                        <i class="fas fa-question-circle"></i> 
+                        Perguntas Frequentes
+                    </h6>
+
+                    <div class="accordion" id="faqAccordion">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                                    Posso desabilitar o 2FA e reabilitá-lo depois?
+                                </button>
+                            </h2>
+                            <div id="faq1" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body small">
+                                    Sim! Você pode desabilitar o 2FA a qualquer momento e reabilitá-lo sempre que quiser. 
+                                    Quando reabilitar, terá que escanear um novo QR code e gerar novos códigos de backup.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                                    Vai afetar meus dados?
+                                </button>
+                            </h2>
+                            <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body small">
+                                    Não, desabilitar o 2FA não vai afetar seus dados. Todos os seus dados permanecerão 
+                                    salvos normalmente. Apenas o método de autenticação será alterado.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                                    Preciso usar minha senha para desabilitar o 2FA?
+                                </button>
+                            </h2>
+                            <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body small">
+                                    Sim, por motivos de segurança, você precisará confirmar sua senha para desabilitar o 2FA. 
+                                    Isso garante que apenas o proprietário da conta possa fazer essa alteração.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">
+                                    O que faço se não conseguir desabilitar o 2FA?
+                                </button>
+                            </h2>
+                            <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body small">
+                                    Se você esqueceu sua senha ou não conseguir acessar sua conta, 
+                                    entre em contato com o suporte. Estaremos prontos para ajudar!
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .accordion-button:not(.collapsed) {
+        background-color: #f8f9fa;
+        color: #333;
+    }
+</style>
+{% endblock %}

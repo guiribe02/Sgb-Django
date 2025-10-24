@@ -1,0 +1,253 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Códigos de Backup 2FA - SGBooks{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-body p-5">
+                    <div class="text-center mb-4">
+                        <h2 class="card-title">
+                            <i class="fas fa-key text-warning"></i> 
+                            Códigos de Backup
+                        </h2>
+                        <p class="text-muted">Salve esses códigos em um local seguro</p>
+                    </div>
+
+                    <!-- Alerta Importante -->
+                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <strong>⚠️ Importante:</strong> 
+                        Esses códigos são de uso único e servem como backup caso você perca o acesso ao seu app autenticador.
+                        <strong>Guarde em local seguro!</strong>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+
+                    <!-- Informações -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h6 class="card-title">
+                                        <i class="fas fa-shield-alt"></i> 
+                                        O que é?
+                                    </h6>
+                                    <p class="card-text small">
+                                        Códigos de backup permitem que você faça login mesmo se perder o acesso ao seu 
+                                        app autenticador (roubo, perda de telefone, etc.).
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h6 class="card-title">
+                                        <i class="fas fa-lightbulb"></i> 
+                                        Como usar?
+                                    </h6>
+                                    <p class="card-text small">
+                                        Use um código de backup no lugar do código do app durante o login. 
+                                        Cada código pode ser usado apenas uma vez.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Lista de Códigos -->
+                    <div class="card bg-light mb-4">
+                        <div class="card-header bg-white border-bottom">
+                            <h6 class="mb-0">
+                                <i class="fas fa-list"></i> 
+                                Seus Códigos de Backup ({{ total_codes }} no total)
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="backup-codes-list">
+                                {% for code in backup_codes %}
+                                    <div class="backup-code-item">
+                                        <code class="font-monospace">{{ code }}</code>
+                                        <button 
+                                            type="button" 
+                                            class="btn btn-sm btn-outline-secondary" 
+                                            onclick="copiarCodigo('{{ code }}')"
+                                            title="Copiar código"
+                                        >
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                    </div>
+                                {% empty %}
+                                    <p class="text-muted">Nenhum código de backup disponível.</p>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Opções de Download/Impressão -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <button class="btn btn-outline-primary w-100" onclick="imprimirCodigos()">
+                                <i class="fas fa-print"></i> Imprimir
+                            </button>
+                        </div>
+                        <div class="col-md-6">
+                            <button class="btn btn-outline-success w-100" onclick="baixarCodigos()">
+                                <i class="fas fa-download"></i> Baixar
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Checklist de Segurança -->
+                    <div class="card bg-info bg-opacity-10 border-info">
+                        <div class="card-body">
+                            <h6 class="card-title text-info mb-3">
+                                <i class="fas fa-tasks"></i> 
+                                Checklist de Segurança
+                            </h6>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="check1">
+                                <label class="form-check-label" for="check1">
+                                    Copiei todos os códigos em um local seguro
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="check2">
+                                <label class="form-check-label" for="check2">
+                                    Imprimi os códigos e guardei em local seguro
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="check3">
+                                <label class="form-check-label" for="check3">
+                                    Entendi que cada código pode ser usado apenas uma vez
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="check4">
+                                <label class="form-check-label" for="check4">
+                                    Meu app autenticador está funcionando corretamente
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <a href="{% url 'login' %}" class="btn btn-secondary w-100">
+                                <i class="fas fa-arrow-left"></i> Voltar ao Login
+                            </a>
+                        </div>
+                        <div class="col-md-6">
+                            <a href="{% url 'disable_2fa' %}" class="btn btn-outline-danger w-100">
+                                <i class="fas fa-times"></i> Desabilitar 2FA
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Informações adicionais -->
+            <div class="card mt-4 border-secondary">
+                <div class="card-body">
+                    <h6 class="card-title text-secondary">
+                        <i class="fas fa-question-circle"></i> 
+                        Perguntas Frequentes
+                    </h6>
+                    <p class="card-text small">
+                        <strong>E se eu não salvar os códigos agora?</strong><br>
+                        Você pode acessá-los novamente entrando nas configurações da sua conta após fazer login.
+                    </p>
+                    <p class="card-text small">
+                        <strong>Quantas vezes posso usar um código?</strong><br>
+                        Cada código de backup pode ser usado apenas uma vez. Após usar, será removido da lista.
+                    </p>
+                    <p class="card-text small">
+                        <strong>Posso gerar novos códigos?</strong><br>
+                        Sim, você pode desabilitar e reabilitar o 2FA para gerar um novo conjunto de códigos.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .backup-codes-list {
+        display: grid;
+        gap: 0.5rem;
+    }
+
+    .backup-code-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.75rem;
+        background: white;
+        border: 1px solid #dee2e6;
+        border-radius: 0.25rem;
+        font-family: 'Courier New', monospace;
+        font-size: 0.9rem;
+        letter-spacing: 0.05rem;
+    }
+
+    code {
+        user-select: all;
+    }
+
+    @media print {
+        .btn, .alert, .card-header, .form-check, hr {
+            display: none;
+        }
+        
+        .backup-code-item {
+            page-break-inside: avoid;
+        }
+    }
+</style>
+
+<script>
+    function copiarCodigo(code) {
+        const textarea = document.createElement('textarea');
+        textarea.value = code;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        
+        alert('Código copiado: ' + code);
+    }
+
+    function imprimirCodigos() {
+        window.print();
+    }
+
+    function baixarCodigos() {
+        const codigosElements = document.querySelectorAll('.backup-code-item code');
+        const codigos = Array.from(codigosElements).map(el => el.textContent.trim());
+
+        const conteudo = 'CÓDIGOS DE BACKUP 2FA - SGBooks\n' +
+                        '================================\n' +
+                        'Gerado em: ' + new Date().toLocaleString() + '\n\n' +
+                        'IMPORTANTE: Guarde esses códigos em local seguro!\n' +
+                        'Cada código pode ser usado apenas uma vez.\n\n' +
+                        '--- CÓDIGOS ---\n' +
+                        codigos.join('\n');
+
+        const blob = new Blob([conteudo], { type: 'text/plain' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'codigos_backup_2fa.txt';
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+    }
+</script>
+{% endblock %}
